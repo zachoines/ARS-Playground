@@ -1,6 +1,6 @@
 # Libraries
 import os
-import numpy
+import numpy as np
 
 # Class for the Hyperparameters of AI
 class HyperParam():
@@ -15,3 +15,30 @@ class HyperParam():
         self.noise = noise
         self.seed = seed
         self.environmentName = environmentName
+
+# ARS V2 State normalization
+class  Nornmalizer():
+    def __init__(self, numPerceptInputs):
+        # Input vector
+        self.n = np.zeros(numPerceptInputs)
+        self.mean = np.zeros(numPerceptInputs)
+        self.mean_diff = np.zeros(numPerceptInputs)
+        self.variance = np.zeros(numPerceptInputs)
+
+    def observe(self, x):
+        self.n += 1.
+
+        # Online calculation of the mean
+        lastMean = self.mean.copy()
+        self.mean += (x - self.mean) / self.n
+        # Online calculation of the variance
+        self.mean_diff += (x - lastMean) * (x - self.mean)\
+        # variance
+        self.var = (self.mean_diff / self.n).clip(min = 1e-2)
+
+    # So that states have values of 0.0 to 1.0
+    def normalize(self, inputs):
+        observedMean = self.mean
+        # Standard deviation
+        observedSTD = np.sqrt(self.var)
+        return (inputs - observedMean) / observedMean
