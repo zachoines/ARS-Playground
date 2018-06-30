@@ -42,3 +42,32 @@ class  Nornmalizer():
         # Standard deviation
         observedSTD = np.sqrt(self.var)
         return (inputs - observedMean) / observedMean
+
+# Fleshing out our agent
+class Agent():
+    def __init(self, inputSize, outputSize):
+        # Matrix of weights for our perceptron
+        self.theta = np.zero((outputSize, inputSize))
+
+        # V2 ARS weight perturbations (states are normalized before passed in)
+        def evaluate(self, input, delta = None, direction = None):
+            if direction is None:
+                # Return output of the perceptron without any weights
+                return self.theta.dot(input)
+            elif direction == "positive":
+                # Add a positive small perturbation top weight and multiple to each input
+                return (self.theta + hp.noise*delta).dot(input)
+            else:
+                # Try the negative version of the perturbation
+                return (self.theta - hp.noise*delta).dot(input)
+
+        def samplePurterbations(self):
+            # Sample deltas according to a normal or gaussian distribution.
+            return [np.random.randn(*self.theta.shape) for _ in range(hp.numDirections)]
+
+        # Implementation of the method of finite differences
+        def update(self, rollout, sigma_r):
+            step = np.zeros(self.theta.shape)
+            for r_po, r_neg, d in rollouts:
+                step += (r_pos - r_neg) * d
+            self.theta += hp.learningRate / (hp.numBestDirections * sigma)
